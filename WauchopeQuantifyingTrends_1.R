@@ -16,7 +16,7 @@
 #Plot. This section plots all results. This has not been fully optimised to adapt to any results (as it very much depends on what dataset is being used) so will need some tweaking if you wish to apply it to your data, e.g. for axis names etc
 #Paper stats. This is a small section just showing how I calculated any statistics reported in the paper/supporting material. 
 #Build Supporting data. This organises and saves all model outputs in the format given in supporting materials. 
-#Supplementary analysis for supporting information section 4
+#Supplementary analysis for supporting information section 5
 
 ### TO APPLY ANALYSES TO YOUR OWN DATA ###
 #Set all your file paths in the "Load packages and read data" section, make sure you have all packages installed
@@ -1342,7 +1342,7 @@ for (SamplingType in c("Consecutive", "Interval")){ # Loop through consecutive a
   
 }
 
-#### Supplementary analysis for supporting information section 4 ####
+#### Supplementary analysis for supporting information section 5 ####
 #This is a little bit of extra supporting code to calculate how often insignificant samples are still approximating the same trend sign/magnitude as complete samples. (In the paper, we treat any insigicant slopes as just 'insignificant' and don't consider the actual slope)
 #So, in the sign section, we are looking for cases where the complete trend was significant, and the sample insignificant, and comparing slope sign. This has been termed "missed sig" in the code below. 
 #In the magnitude section we are looking for cases where the complete trend was significant and the sample insignificant, and comparing their slope magnitude to see whether the sample is still within the tolerance range

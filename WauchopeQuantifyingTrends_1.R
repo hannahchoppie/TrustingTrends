@@ -64,7 +64,7 @@ library(gridExtra)
 DataFP <- "<insert your data filepath>" #This folder should contain the count data for your populations
 ResultsFP <- "<insert filepath to where you will store results>" #This file path is where all data is output (And read in for summaries) it should first contain the formatted data you are using, at minimum TYB_list.RData, but possibly also "TYB_St.Rdata" and "GenLengthSpec.csv". Next, it should also contain a folder named "GLM", and within this folder should be three folders, "Consecutive", "Intervals" and "Summaries" (+ "SummariesInsig if doing the final extra bit of supplementary analysis)
 FiguresFP <- "<insert filepath to where you will export figures>" #This is where figures are saved. It should contain four folders, "Sign", "Magnitude", "Gen" and "EDF" (+ another folder named "Insig" containing "Sign" and "Magnitude" folders, if doing the extra supplementary analysis)
-ncores <- 4 #for parallelising code. nb - the scale of data I ran these analyses at, i.e. ~29,000 populations with 30 years of counts each, took approx 960 hours to run on one core (i.e. 30 hours on 32 cores). Increasing the number of years or number of populations would increase these, so be aware!
+ncores <- 32 #for parallelising code. nb - the scale of data I ran these analyses at, i.e. ~29,000 populations with 30 years of counts each, took approx 960 hours to run on one core (i.e. 30 hours on 32 cores). Increasing the number of years or number of populations would increase these, so be aware!
 
 load(file=paste0(DataFP, "birdcounts.RData")) #My original unsorted data (Containing site name, species name, year, count, and 'hours'(for effort), used in "prepare count data")
 

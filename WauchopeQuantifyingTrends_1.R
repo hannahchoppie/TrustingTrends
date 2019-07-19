@@ -16,7 +16,7 @@
 #Plot. This section plots all results. This has not been fully optimised to adapt to any results (as it very much depends on what dataset is being used) so will need some tweaking if you wish to apply it to your data, e.g. for axis names etc
 #Paper stats. This is a small section just showing how I calculated any statistics reported in the paper/supporting material. 
 #Build Supporting data. This organises and saves all model outputs in the format given in supporting materials. 
-#Supplementary analysis for supporting information section 5
+#Supplementary analysis for supporting information section 6
 
 ### TO APPLY ANALYSES TO YOUR OWN DATA ###
 #Set all your file paths in the "Load packages and read data" section, make sure you have all packages installed
@@ -30,7 +30,7 @@
   ##Year - The year of data, should be sorted smallest to largest
   ##Count - The number of counts in that year
   ##Hours - An effort term, in my case the number of hours of effort that went into collecting the count. This can be any kind of effort value, as long as it's consistent between all populations. Note that across all populations log(effort) should correlate with count (see main manuscript, and second section of "Prepare Count Data" in this file)
-    #If effort is consistent (i.e. counts were taken in a standardised way) this column should just be 1 for all values (NOT 'NA'. I know this is slightly unconventional, but it's the most efficient way to exclude this term without lots of extra code)
+    #If effort is consistent (i.e. counts were taken in a standardised way) this column should just be 1 for all values (NOT 'NA')
 #If you like, you can include a list of population names that represents a standardised subset (see final section of Prepare Count Data). This should be named "TYB_St.RData", saved within ResultsFP, and just be a vector of SiteSpec names that match with the names in the main dataset.
   #If you do not want to include any standardised records simply do not run "Sign_St" or "Magnitude_St" at the end of each summarise section in Models 1 and Models 2
 #If you like, you can also include data on the generation length of each species. You require a dataframe, saved as "GenLengthSpec.csv" within ResultsFP, with two columns:
@@ -290,6 +290,9 @@ Magnitude <- function(DATA, Standardise, GenLength, EDFNum, Significance){
   }
   
   Input <- Input[complete.cases(Input)] #Remove NAs
+  
+  Input$Slope <- exp(Input$Slope)
+  Input$CompleteLengthSlope <- exp(Input$CompleteLengthSlope)
   
   #Find correct and incorrect for the various tolerances
   summarise <- rbindlist(lapply(c(0.01, 0.025, 0.05, 0.1, 0.25, 0.5), function(x){
@@ -1017,11 +1020,11 @@ for(SamplingType in c("Consecutive", "Interval")){ #Loop through consecutive and
     SignPlots <- rbindlist(pblapply(c("Matching","Opposing", "MPos","MNeg", "ErrPos", "ErrNeg"), function(Category) PropOverall(SignAll, Category))) #Apply the PropOverall Function
     SignPlots$Category <- factor(SignPlots$Category, levels = c("a) Matching", "c) Erroneous Positive", "e) Missed Positive", "b) Opposing", "d) Erroneous Negative","f) Missed Negative")) #Set levels of factor
     if(SamplingType=="Consecutive"){ #Set plot dimensions
-      W <- 173
-      H <- 116
+      W <- 173*1.040462
+      H <- 116*1.040462
     } else {
-      W <- 189
-      H <- 80
+      W <- 189*0.952381
+      H <- 80*0.952381
     }
     #Apply plot functions and save
     ggsave(paste0(FiguresFP,"Sign/Sign_", SamplingType, "_", Casttype, "_", modelfam, ".pdf"), SignPlot(SignPlots), device="pdf", width = W, height = H, units = "mm") #Save as a pdf
@@ -1044,11 +1047,11 @@ for(SamplingType in c("Consecutive", "Interval")){ #Loop through consecutive and
     return(PropGen)
   }))
   if(SamplingType=="Consecutive"){ #Set plot dimensions
-    W <- 130
-    H <- 130
+    W <- 130*1.384615
+    H <- 120*1.384615
   } else {
-    W <- 190
-    H <- 120
+    W <- 190*0.9473684
+    H <- 110*0.9473684
   }
   #Apply plot functions and save
   ggsave(paste0(FiguresFP,"Gen/SignGen_", SamplingType, "_", modelfam, ".pdf"), SignPlotGen(SignPlotsGen), device="pdf", width = W, height = H, units = "mm") #Save as an image
@@ -1063,11 +1066,11 @@ for(SamplingType in c("Consecutive", "Interval")){ #Loop through consecutive and
     return(PropEDF)
   }))
   if(SamplingType=="Consecutive"){ #Set plot dimensions
-    W <- 150
-    H <- 120
+    W <- 130*1.384615
+    H <- 120*1.384615
   } else {
-    W <- 248
-    H <- 132
+    W <- 190*0.9473684
+    H <- 110*0.9473684
   }
   #Apply plot functions and save
   ggsave(paste0(FiguresFP,"EDF/Sign_EDF_", SamplingType, "_", modelfam, ".pdf"), SignPlotEDF(SignPlotsEDF), device="pdf", width = W, height = H, units = "mm") #Save as an image
@@ -1101,15 +1104,15 @@ for(SamplingType in c("Consecutive", "Interval")){ #Loop through consecutive and
     if(Casttype=="All"){MagnitudeEDF$PropCorrect <- MagnitudeEDF$Correct/(MagnitudeEDF$Correct+MagnitudeEDF$Incorrect)}
 
     if(SamplingType=="Consecutive"){ #Set plot dimensions
-      H <- 120
-      W <- 135
-      H_GenEDF <- 120
-      W_GenEDF <- 150
+      H <- 115*0.5925926
+      W <- 135*0.5925926
+      H_GenEDF <- 120*1.2
+      W_GenEDF <- 150*1.2
     } else {
-      H <- 119
-      W <- 179
-      H_GenEDF <- 100
-      W_GenEDF <- 150
+      H <- 119*1.005587
+      W <- 179*1.005587
+      H_GenEDF <- 100*1.2
+      W_GenEDF <- 150*1.2
     }
     
     #Apply plot functions and save
@@ -1342,7 +1345,7 @@ for (SamplingType in c("Consecutive", "Interval")){ # Loop through consecutive a
   
 }
 
-#### Supplementary analysis for supporting information section 5 ####
+#### Supplementary analysis for supporting information section 6 ####
 #This is a little bit of extra supporting code to calculate how often insignificant samples are still approximating the same trend sign/magnitude as complete samples. (In the paper, we treat any insigicant slopes as just 'insignificant' and don't consider the actual slope)
 #So, in the sign section, we are looking for cases where the complete trend was significant, and the sample insignificant, and comparing slope sign. This has been termed "missed sig" in the code below. 
 #In the magnitude section we are looking for cases where the complete trend was significant and the sample insignificant, and comparing their slope magnitude to see whether the sample is still within the tolerance range
@@ -1453,9 +1456,12 @@ MagnitudeInsig <- function(DATA, Standardise, GenLength, EDFNum, Significance){
   
   Input <- Input[complete.cases(Input)] #Remove NAs
   
+  Input$Slope <- exp(Input$Slope)
+  Input$CompleteLengthSlope <- exp(Input$CompleteLengthSlope)
+  
   #Find correct and incorrect for the various tolerances
   summarisePos <- rbindlist(lapply(c(0.01, 0.025, 0.05, 0.1, 0.25, 0.5), function(Tol){
-    ok <- subset(Input, Slope>0 & CompleteLengthSlope>0)
+    ok <- subset(Input, Slope>=1 & CompleteLengthSlope>=1)
     ok$Trend <- ifelse(ok$Slope<(ok$CompleteLengthSlope+Tol) & ok$Slope>(ok$CompleteLengthSlope-Tol), "Correct", "Incorrect")
     ok$Tolerance <- Tol
     summarise <- dcast(ok, NumYears+Tolerance~Trend, length, value.var="Trend")
@@ -1464,7 +1470,7 @@ MagnitudeInsig <- function(DATA, Standardise, GenLength, EDFNum, Significance){
   }), fill=TRUE)
   
   summariseNeg <- rbindlist(lapply(c(0.01, 0.025, 0.05, 0.1, 0.25, 0.5), function(Tol){
-    ok <- subset(Input, Slope<0 & CompleteLengthSlope<0)
+    ok <- subset(Input, Slope<1 & CompleteLengthSlope<1)
     ok$Trend <- ifelse(ok$Slope<(ok$CompleteLengthSlope+Tol) & ok$Slope>(ok$CompleteLengthSlope-Tol), "Correct", "Incorrect")
     ok$Tolerance <- Tol
     summarise <- dcast(ok, NumYears+Tolerance~Trend, length, value.var="Trend")
@@ -1473,8 +1479,8 @@ MagnitudeInsig <- function(DATA, Standardise, GenLength, EDFNum, Significance){
   }), fill=TRUE)
   
   summarisePosNeg <- rbindlist(lapply(c(0.01, 0.025, 0.05, 0.1, 0.25, 0.5), function(Tol){
-    ok <- subset(Input, Slope>0 & CompleteLengthSlope<0)
-    ok <- rbind(ok, subset(Input, Slope<0 & CompleteLengthSlope>0))
+    ok <- subset(Input, Slope>=1 & CompleteLengthSlope<1)
+    ok <- rbind(ok, subset(Input, Slope<1 & CompleteLengthSlope>=1))
     ok$Trend <- ifelse(ok$Slope<(ok$CompleteLengthSlope+Tol) & ok$Slope>(ok$CompleteLengthSlope-Tol), "Correct", "Incorrect")
     ok$Tolerance <- Tol
     summarise <- dcast(ok, NumYears+Tolerance~Trend, length, value.var="Trend")
@@ -1589,7 +1595,7 @@ MagnitudeSummary1 <- rbindlist(lapply(list.files(path=paste0(ResultsFP, "GLM/Sum
 SignSummaryData <- subset(SignSummary, CastType=="All")
 SignSummaryData[,c("SamplingType", "Model", "CastType")] <- NULL
 names(SignSummaryData) <- c("SampleLength", "PropCorrect", "CompleteLength", "GenLength", "EDF")
-write.csv(SignSummaryData, paste0(FiguresFP, "Supporting/SignDataConsecutive_SupportingDataSection4.csv"), row.names=FALSE)
+write.csv(SignSummaryData, paste0(FiguresFP, "Supporting/SignDataConsecutive_SupportingDataSection6.csv"), row.names=FALSE)
 
 #This block organises the sign interval data
 SignSummaryInterval <- read.csv(file=paste0(ResultsFP, "GLM/SummariesInsig/Sign_Interval_", modelfam, ".csv")) #Read in summarised data from model runs
@@ -1602,7 +1608,7 @@ SignSummaryInterval <- rbind(SignSummaryComplete, SignSummaryInterval) #Add MCL 
 SignSummaryIntervalData <- subset(SignSummaryInterval, CastType=="All")
 SignSummaryIntervalData[,c("SamplingType", "Model", "CastType")] <- NULL
 names(SignSummaryIntervalData) <- c("SampleLength", "PropCorrect", "IntervalLength", "GenLength", "EDF")
-write.csv(SignSummaryIntervalData, paste0(FiguresFP, "Supporting/SignDataInterval_SupportingDataSection4.csv"), row.names=FALSE) #Write out the data
+write.csv(SignSummaryIntervalData, paste0(FiguresFP, "Supporting/SignDataInterval_SupportingDataSection6.csv"), row.names=FALSE) #Write out the data
 
 #This block organises the magnitude data, by calculating the number of corrects and incorrects (within each tolerance level) and getting a proportion
 MagnitudeSummary2 <- dcast(MagnitudeSummary1, NumYears + Tolerance + SamplingType + Model + CompleteLength + GenLength + CastType + EDF ~ Investigation, value.var="Correct")
@@ -1631,13 +1637,13 @@ MagnitudeSummary$PropCorrect <- MagnitudeSummary$Correct/(MagnitudeSummary$Corre
 MagnitudeSummaryData <- subset(MagnitudeSummary, CastType=="All")
 MagnitudeSummaryData[,c("Correct", "Incorrect", "SamplingType", "Model", "CastType")] <- NULL
 names(MagnitudeSummaryData) <- c("SampleLength", "Tolerance", "CompleteLength", "GenLength", "EDF", "PropWithinTolerance")
-write.csv(MagnitudeSummaryData, paste0(FiguresFP, "Supporting/MagntiudeDataConsecutive_SupportingDataSection4.csv"), row.names=FALSE) #Write out the data
+write.csv(MagnitudeSummaryData, paste0(FiguresFP, "Supporting/MagntiudeDataConsecutive_SupportingDataSection6.csv"), row.names=FALSE) #Write out the data
 
 MagnitudeSummaryInterval$PropCorrect <- MagnitudeSummaryInterval$Correct/(MagnitudeSummaryInterval$Correct+MagnitudeSummaryInterval$Incorrect) #Find proportion correct
 MagnitudeSummaryIntervalData <- subset(MagnitudeSummaryInterval, CastType=="All")
 MagnitudeSummaryIntervalData[,c("Correct", "Incorrect", "SamplingType", "Model", "CastType")] <- NULL
 names(MagnitudeSummaryIntervalData) <- c("SampleLength", "Tolerance", "CompleteLength", "GenLength", "EDF", "IntervalLength", "PropWithinTolerance")
-write.csv(MagnitudeSummaryIntervalData, paste0(FiguresFP, "Supporting/MagntiudeDataInterval_SupportingDataSection4.csv"), row.names=FALSE) #Write out the data
+write.csv(MagnitudeSummaryIntervalData, paste0(FiguresFP, "Supporting/MagntiudeDataInterval_SupportingDataSection6.csv"), row.names=FALSE) #Write out the data
 
 ### Write functions for plotting
 SignPlot <- function(Sign){ 

@@ -1047,11 +1047,11 @@ for(SamplingType in c("Consecutive", "Interval")){ #Loop through consecutive and
     return(PropGen)
   }))
   if(SamplingType=="Consecutive"){ #Set plot dimensions
-    W <- 130*1.384615
-    H <- 120*1.384615
+    W <- 110*1.636364
+    H <- 120*1.636364
   } else {
-    W <- 190*0.9473684
-    H <- 110*0.9473684
+    W <- 190
+    H <- 125
   }
   #Apply plot functions and save
   ggsave(paste0(FiguresFP,"Gen/SignGen_", SamplingType, "_", modelfam, ".pdf"), SignPlotGen(SignPlotsGen), device="pdf", width = W, height = H, units = "mm") #Save as an image
@@ -1066,11 +1066,11 @@ for(SamplingType in c("Consecutive", "Interval")){ #Loop through consecutive and
     return(PropEDF)
   }))
   if(SamplingType=="Consecutive"){ #Set plot dimensions
-    W <- 130*1.384615
-    H <- 120*1.384615
+    W <- 150*1.2
+    H <- 110*1.2
   } else {
-    W <- 190*0.9473684
-    H <- 110*0.9473684
+    W <- 248
+    H <- 122
   }
   #Apply plot functions and save
   ggsave(paste0(FiguresFP,"EDF/Sign_EDF_", SamplingType, "_", modelfam, ".pdf"), SignPlotEDF(SignPlotsEDF), device="pdf", width = W, height = H, units = "mm") #Save as an image
@@ -1106,13 +1106,13 @@ for(SamplingType in c("Consecutive", "Interval")){ #Loop through consecutive and
     if(SamplingType=="Consecutive"){ #Set plot dimensions
       H <- 115*0.5925926
       W <- 135*0.5925926
-      H_GenEDF <- 120*1.2
-      W_GenEDF <- 150*1.2
+      H_GenEDF <- 120
+      W_GenEDF <- 150
     } else {
       H <- 119*1.005587
       W <- 179*1.005587
-      H_GenEDF <- 100*1.2
-      W_GenEDF <- 150*1.2
+      H_GenEDF <- 100
+      W_GenEDF <- 150
     }
     
     #Apply plot functions and save
@@ -1174,9 +1174,11 @@ mean(AllModels$Slope) #Find the mean of all trends
 max(AllModels$Slope) #Find the max trend
 min(AllModels$Slope) #Find the min trend
 
+AllModelsSub$Slope <- exp(AllModelsSub$Slope)
+
 GrowthRateHist <- ggplot(data=AllModelsSub)+ #Make a histogram of all trend growth rate values
   geom_freqpoly(aes(x=Slope), binwidth=0.01)+
-  scale_x_continuous(breaks=c(seq(-1,1,0.5)), expand = c(0,0))+
+  scale_x_continuous(breaks=c(seq(1,2,0.5)), expand = c(0,0), limits = c(0,2))+
   scale_y_continuous(limits=c(0, 2000), expand = c(0,0))+
   ggtitle("a)")+
   xlab("Population Growth Rate (r)")+
@@ -1184,9 +1186,9 @@ GrowthRateHist <- ggplot(data=AllModelsSub)+ #Make a histogram of all trend grow
   theme(aspect.ratio=1, 
         panel.background = element_blank(),
         panel.grid = element_blank(), 
-        text = element_text(size=plotfontsize),
+        text = element_text(size=plotfontsize+2),
         panel.border = element_rect(size = 1, fill = NA),
-        plot.title = element_text(size=plotfontsize))
+        plot.title = element_text(size=plotfontsize+2))
 
 EDFHist <- ggplot(data=AllModels)+ #Make a histogram of all EDFs
   geom_freqpoly(aes(x=EDF), binwidth=0.5)+
@@ -1198,9 +1200,9 @@ EDFHist <- ggplot(data=AllModels)+ #Make a histogram of all EDFs
   theme(aspect.ratio=1, 
         panel.background = element_blank(),
         panel.grid = element_blank(), 
-        text = element_text(size=plotfontsize),
+        text = element_text(size=plotfontsize+2),
         panel.border = element_rect(size = 1, fill = NA),
-        plot.title = element_text(size=plotfontsize))
+        plot.title = element_text(size=plotfontsize+2))
 
 W <- 200 #Set plot dimensions
 H <- 110
@@ -1726,10 +1728,10 @@ MagnitudePlot <- function(Sign){
   }
   if(SamplingType=="Consecutive"){ #Set breaks for plot
     breaksx <- seq(0,MCL,5)
-    breaksy <- seq(0,100,10)
+    breaksy <- seq(0,100,20)
   } else {
     breaksx <- seq(3,15,2)
-    breaksy <- seq(0,100,10) 
+    breaksy <- seq(0,100,20) 
   }
   Sign$PropCorrect <- Sign$PropCorrect*100 #Change proportion correct to a percentage
   ggplot(Sign, aes(x=NumYears,y=PropCorrect, colour=Tolerance))+ #make a line plot!
@@ -1745,12 +1747,14 @@ MagnitudePlot <- function(Sign){
           panel.background = element_blank(),
           panel.grid = element_blank(), 
           text = element_text(size=plotfontsize),
+          axis.text = element_text(size=plotfontsize),
           panel.border = element_rect(size = 1, fill = NA),
           strip.background = element_blank(),
-          strip.text = element_text(hjust = 0),
+          strip.text = element_text(hjust = 0, size=plotfontsize),
           legend.title=element_text(size=plotfontsize),
           legend.key=element_blank(),
-          legend.justification = "top")
+          legend.justification = "top", 
+          legend.text = element_text(size=plotfontsize))
 }
 
 modelfam <- "nb" #Adjust this if you used a different model fam in above runs

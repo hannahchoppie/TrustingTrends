@@ -1165,7 +1165,9 @@ length(OverDis[(OverDis>10)])/length(OverDis) #Proportion of data that is over d
 AllModels <- read.csv(paste0(ResultsFP, "GLM/Consecutive/Consecutive_GLM_",MCL, "Years_1StartYear_nb.csv")) #Read in just MCL year data
 AllModels <- AllModels[!is.na(AllModels$Slope),] #Remove NAs
 
-AllModelsSub <- subset(AllModels, Slope<1 & Slope>-1) #Find out how many trends are between -1 and 1
+AllModels$Slope <- exp(AllModels$Slope)
+
+AllModelsSub <- subset(AllModels, Slope<2 & Slope>0) #Find out how many trends are between -1 and 1
 nrow(AllModelsSub)/nrow(AllModels)
 
 nrow(subset(AllModels, EDF<1.0001))/nrow(AllModels) #Find out the proportion of trends that have an EDF of 1 (i.e. are linear)
@@ -1173,8 +1175,6 @@ nrow(subset(AllModels, Significant<=0.05))/nrow(AllModels) #Find out the proport
 mean(AllModels$Slope) #Find the mean of all trends
 max(AllModels$Slope) #Find the max trend
 min(AllModels$Slope) #Find the min trend
-
-AllModelsSub$Slope <- exp(AllModelsSub$Slope)
 
 GrowthRateHist <- ggplot(data=AllModelsSub)+ #Make a histogram of all trend growth rate values
   geom_freqpoly(aes(x=Slope), binwidth=0.01)+

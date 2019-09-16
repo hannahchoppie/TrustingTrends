@@ -1,11 +1,11 @@
 ### WELCOME ###
 ### This code is to calcuate confidence in population trends by artifically degrading a count dataset of long term time-series, as used in the paper "When can we trust population trends? A method for quantifying the effects of sampling interval and duration" by Hannah Wauchope, Alison Johnston, Tatsuya Amano and William Sutherland (2019).
-### Currently available on Biorxve https://www.biorxiv.org/content/early/2018/12/20/498170
+### Published by Methods in Ecology and Evolution
 ### Produced by Hannah Wauchope, please contact at hannah.wauchope@uqconnect.edu.au with any questions/comments/errors you've found. 
 ### Refer to the paper for explanations of methods, terms used etc.
 
 ### THIS CODE CONTAINS THE FOLLOWING SECTIONS ###
-#Load packages and read data. This loads all require packages, and sets up filepaths for importing and exporting data, this should be adjusted if code is being used for your own data
+#Load packages and read data. This loads all required packages, and sets up filepaths for importing and exporting data, this should be adjusted if code is being used for your own data
 #Prepare Count Data and Prepare Generation Length Data. This shows how I organised the data for the paper. These are relevant for exact replicas of my results using CBC downloaded data, but otherwise are only useful as reference.
 #Functions. Shows the functions used to compare trends between subsets and complete datasets (by Sign and Magnitude)
 #Models 1. Consecutive. Divided into two sections, Run Models and Summarise. In 'Run Models' GLMs are run on all iterations of subsets of the data (i.e. all possible numbers of years, and all possible start years)

@@ -1272,7 +1272,7 @@ MagnitudeSummaryComplete <- subset(MagnitudeSummary, CompleteLength==MCL)
 MagnitudeSummaryComplete$IntervalLength <- 1
 MagnitudeSummaryInterval <- rbind(MagnitudeSummaryComplete, MagnitudeSummaryInterval)
 
-for (SamplingType in c("Consecutive", "Interval")){ # Loop through consecutive and interval
+for(SamplingType in c("Consecutive", "Interval")){ # Loop through consecutive and interval
   if(SamplingType=="Consecutive"){
     Sign <- subset(SignSummary, CastType=="All") #Get relevant data
   } else {
@@ -1307,13 +1307,14 @@ for (SamplingType in c("Consecutive", "Interval")){ # Loop through consecutive a
   SignData <- rbind(SignPlots, SignPlotsEDF, SignPlotsGen) #bring data together
   if(SamplingType=="Consecutive"){ #Rename columns for clarity
     names(SignData)[1] <- "SampleLength"
+    SignData <- SignData[,c(1,4,3,2,5,6)]
   } else {
-    names(MagnitudeData)[1] <- "SampleLength"
+    names(SignData)[1] <- "IntervalLength"
     names(SignData)[4] <- "NumYearsInSample"
     SignData$CompleteLength <- MCL
+    SignData <- SignData[,c(1,4,7,3,2,5,6)]
   }
-  
-  write.csv(SignData, paste0(FiguresFP, "Supporting/SignData",SamplingType, ".csv"), row.names=FALSE) #Save!
+  write.csv(SignData, paste0(FiguresFP, "Supporting/SupportingData_Sign",SamplingType, ".csv"), row.names=FALSE) #Save!
   
   if(SamplingType=="Consecutive"){
     Magnitude <- subset(MagnitudeSummary, CastType=="All")
@@ -1338,13 +1339,16 @@ for (SamplingType in c("Consecutive", "Interval")){ # Loop through consecutive a
   MagnitudeData <- rbind(MagnitudeAll, MagnitudeGen, MagnitudeEDF) #Bring the three together
   if(SamplingType=="Consecutive"){ #Rename columns for clarity
     names(MagnitudeData)[1] <- "SampleLength"
+    names(MagnitudeData)[6] <- "PropWithinTolerance"
+    MagnitudeData <- MagnitudeData[,c(1,3,2,6,4,5)]
   } else {
-    names(MagnitudeData)[1] <- "SampleLength"
-    names(MagnitudeData)[7] <- "NumYearsInSample"
+    names(MagnitudeData)[6] <- "IntervalLength"
+    names(MagnitudeData)[1] <- "NumYearsInSample"
+    names(MagnitudeData)[7] <- "PropWithinTolerance"
+    MagnitudeData <- MagnitudeData[,c(6,1,3,2,7,4,5)]
   }
-  names(MagnitudeData)[ncol(MagnitudeData)] <- "PropWithinTolerance"
-  write.csv(MagnitudeData, paste0(FiguresFP, "Supporting/MagnitudeData",SamplingType, ".csv"), row.names=FALSE) #Save!
   
+  write.csv(MagnitudeData, paste0(FiguresFP, "Supporting/SupportingData_Magnitude",SamplingType, ".csv"), row.names=FALSE) #Save!
 }
 
 #### Supplementary analysis for supporting information section 6 ####
@@ -1597,7 +1601,14 @@ MagnitudeSummary1 <- rbindlist(lapply(list.files(path=paste0(ResultsFP, "GLM/Sum
 SignSummaryData <- subset(SignSummary, CastType=="All")
 SignSummaryData[,c("SamplingType", "Model", "CastType")] <- NULL
 names(SignSummaryData) <- c("SampleLength", "PropCorrect", "CompleteLength", "GenLength", "EDF")
-write.csv(SignSummaryData, paste0(FiguresFP, "Supporting/SignDataConsecutive_SupportingDataSection6.csv"), row.names=FALSE)
+SignSummaryData <- SignSummaryData[,c(1,3,2,4,5)]
+SignSummaryData <- SignSummaryData[order(SignSummaryData$CompleteLength),]
+SignSummaryData <- SignSummaryData[order(SignSummaryData$GenLength),]
+SignSummaryData <- SignSummaryData[order(SignSummaryData$EDF),]
+SignSummaryData[SignSummaryData$GenLength==0,]$GenLength <- NA
+SignSummaryData[SignSummaryData$EDF==0,]$EDF <- NA
+
+write.csv(SignSummaryData, paste0(FiguresFP, "Supporting/SupportingData_SignConsecutive_Section6.csv"), row.names=FALSE)
 
 #This block organises the sign interval data
 SignSummaryInterval <- read.csv(file=paste0(ResultsFP, "GLM/SummariesInsig/Sign_Interval_", modelfam, ".csv")) #Read in summarised data from model runs
@@ -1609,8 +1620,18 @@ SignSummaryInterval <- rbind(SignSummaryComplete, SignSummaryInterval) #Add MCL 
 
 SignSummaryIntervalData <- subset(SignSummaryInterval, CastType=="All")
 SignSummaryIntervalData[,c("SamplingType", "Model", "CastType")] <- NULL
-names(SignSummaryIntervalData) <- c("SampleLength", "PropCorrect", "IntervalLength", "GenLength", "EDF")
-write.csv(SignSummaryIntervalData, paste0(FiguresFP, "Supporting/SignDataInterval_SupportingDataSection6.csv"), row.names=FALSE) #Write out the data
+names(SignSummaryIntervalData) <- c("NumYearsInSample", "PropCorrect", "GenLength", "EDF","IntervalLength")
+SignSummaryIntervalData$CompleteLength <- MCL
+SignSummaryIntervalData <- SignSummaryIntervalData[,c(5,1,6,2,4,3)]
+
+SignSummaryIntervalData <- SignSummaryIntervalData[order(SignSummaryIntervalData$NumYearsInSample),]
+SignSummaryIntervalData <- SignSummaryIntervalData[order(SignSummaryIntervalData$IntervalLength),]
+SignSummaryIntervalData <- SignSummaryIntervalData[order(SignSummaryIntervalData$GenLength),]
+SignSummaryIntervalData <- SignSummaryIntervalData[order(SignSummaryIntervalData$EDF),]
+SignSummaryIntervalData[SignSummaryIntervalData$GenLength==0,]$GenLength <- NA
+SignSummaryIntervalData[SignSummaryIntervalData$EDF==0,]$EDF <- NA
+
+write.csv(SignSummaryIntervalData, paste0(FiguresFP, "Supporting/SupportingData_SignInterval_Section6.csv"), row.names=FALSE) #Write out the data
 
 #This block organises the magnitude data, by calculating the number of corrects and incorrects (within each tolerance level) and getting a proportion
 MagnitudeSummary2 <- dcast(MagnitudeSummary1, NumYears + Tolerance + SamplingType + Model + CompleteLength + GenLength + CastType + EDF ~ Investigation, value.var="Correct")
@@ -1639,13 +1660,29 @@ MagnitudeSummary$PropCorrect <- MagnitudeSummary$Correct/(MagnitudeSummary$Corre
 MagnitudeSummaryData <- subset(MagnitudeSummary, CastType=="All")
 MagnitudeSummaryData[,c("Correct", "Incorrect", "SamplingType", "Model", "CastType")] <- NULL
 names(MagnitudeSummaryData) <- c("SampleLength", "Tolerance", "CompleteLength", "GenLength", "EDF", "PropWithinTolerance")
-write.csv(MagnitudeSummaryData, paste0(FiguresFP, "Supporting/MagntiudeDataConsecutive_SupportingDataSection6.csv"), row.names=FALSE) #Write out the data
+MagnitudeSummaryData <- MagnitudeSummaryData[,c(1,3,2,6,4,5)]
+
+MagnitudeSummaryData <- MagnitudeSummaryData[order(MagnitudeSummaryData$SampleLength),]
+MagnitudeSummaryData <- MagnitudeSummaryData[order(MagnitudeSummaryData$CompleteLength),]
+MagnitudeSummaryData <- MagnitudeSummaryData[order(MagnitudeSummaryData$GenLength),]
+MagnitudeSummaryData <- MagnitudeSummaryData[order(MagnitudeSummaryData$EDF),]
+MagnitudeSummaryData[MagnitudeSummaryData$GenLength==0,]$GenLength <- NA
+MagnitudeSummaryData[MagnitudeSummaryData$EDF==0,]$EDF <- NA
+write.csv(MagnitudeSummaryData, paste0(FiguresFP, "Supporting/SupportingData_MagntiudeConsecutive_Section6.csv"), row.names=FALSE) #Write out the data
 
 MagnitudeSummaryInterval$PropCorrect <- MagnitudeSummaryInterval$Correct/(MagnitudeSummaryInterval$Correct+MagnitudeSummaryInterval$Incorrect) #Find proportion correct
 MagnitudeSummaryIntervalData <- subset(MagnitudeSummaryInterval, CastType=="All")
 MagnitudeSummaryIntervalData[,c("Correct", "Incorrect", "SamplingType", "Model", "CastType")] <- NULL
-names(MagnitudeSummaryIntervalData) <- c("SampleLength", "Tolerance", "CompleteLength", "GenLength", "EDF", "IntervalLength", "PropWithinTolerance")
-write.csv(MagnitudeSummaryIntervalData, paste0(FiguresFP, "Supporting/MagntiudeDataInterval_SupportingDataSection6.csv"), row.names=FALSE) #Write out the data
+names(MagnitudeSummaryIntervalData) <- c("NumYearsInSample", "Tolerance", "CompleteLength", "GenLength", "EDF", "IntervalLength", "PropWithinTolerance")
+MagnitudeSummaryIntervalData <- MagnitudeSummaryIntervalData[,c(6,1,3,2,7,4,5)]
+MagnitudeSummaryIntervalData <- MagnitudeSummaryIntervalData[order(MagnitudeSummaryIntervalData$NumYearsInSample),]
+MagnitudeSummaryIntervalData <- MagnitudeSummaryIntervalData[order(MagnitudeSummaryIntervalData$IntervalLength),]
+MagnitudeSummaryIntervalData <- MagnitudeSummaryIntervalData[order(MagnitudeSummaryIntervalData$GenLength),]
+MagnitudeSummaryIntervalData <- MagnitudeSummaryIntervalData[order(MagnitudeSummaryIntervalData$EDF),]
+MagnitudeSummaryIntervalData[MagnitudeSummaryIntervalData$GenLength==0,]$GenLength <- NA
+MagnitudeSummaryIntervalData[MagnitudeSummaryIntervalData$EDF==0,]$EDF <- NA
+
+write.csv(MagnitudeSummaryIntervalData, paste0(FiguresFP, "Supporting/SupportingData_MagntiudeInterval_Section6.csv"), row.names=FALSE) #Write out the data
 
 ### Write functions for plotting
 SignPlot <- function(Sign){ 

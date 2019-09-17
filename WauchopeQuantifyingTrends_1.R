@@ -1668,7 +1668,7 @@ MagnitudeSummaryData <- MagnitudeSummaryData[order(MagnitudeSummaryData$GenLengt
 MagnitudeSummaryData <- MagnitudeSummaryData[order(MagnitudeSummaryData$EDF),]
 MagnitudeSummaryData[MagnitudeSummaryData$GenLength==0,]$GenLength <- NA
 MagnitudeSummaryData[MagnitudeSummaryData$EDF==0,]$EDF <- NA
-write.csv(MagnitudeSummaryData, paste0(FiguresFP, "Supporting/SupportingData_MagntiudeConsecutive_Section6.csv"), row.names=FALSE) #Write out the data
+write.csv(MagnitudeSummaryData, paste0(FiguresFP, "Supporting/SupportingData_MagnitudeConsecutive_Section6.csv"), row.names=FALSE) #Write out the data
 
 MagnitudeSummaryInterval$PropCorrect <- MagnitudeSummaryInterval$Correct/(MagnitudeSummaryInterval$Correct+MagnitudeSummaryInterval$Incorrect) #Find proportion correct
 MagnitudeSummaryIntervalData <- subset(MagnitudeSummaryInterval, CastType=="All")
@@ -1682,7 +1682,7 @@ MagnitudeSummaryIntervalData <- MagnitudeSummaryIntervalData[order(MagnitudeSumm
 MagnitudeSummaryIntervalData[MagnitudeSummaryIntervalData$GenLength==0,]$GenLength <- NA
 MagnitudeSummaryIntervalData[MagnitudeSummaryIntervalData$EDF==0,]$EDF <- NA
 
-write.csv(MagnitudeSummaryIntervalData, paste0(FiguresFP, "Supporting/SupportingData_MagntiudeInterval_Section6.csv"), row.names=FALSE) #Write out the data
+write.csv(MagnitudeSummaryIntervalData, paste0(FiguresFP, "Supporting/SupportingData_MagnitudeInterval_Section6.csv"), row.names=FALSE) #Write out the data
 
 ### Write functions for plotting
 SignPlot <- function(Sign){ 
